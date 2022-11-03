@@ -1,7 +1,7 @@
 use yew::prelude::*;
-use wasm_bindgen::{JsCast, prelude::Closure};
-use web_sys::{window, CanvasRenderingContext2d, HtmlCanvasElement};
-use gloo_timers::callback::{Timeout, Interval};
+use wasm_bindgen::{JsCast};
+use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
+use gloo_timers::callback::{Timeout};
 use wasm_logger;
 use log;
 
@@ -108,7 +108,7 @@ impl Component for Model {
     fn view(&self, ctx: &Context<Self>) -> Html {
         // This gives us a component's "`Scope`" which allows us to send messages, etc to the component.
         let link = ctx.link();
-        let text = format!("{:?}", self.sim);
+        // let text = format!("{:?}", self.sim);
         html! {
             <div>
             <div>
@@ -129,17 +129,6 @@ impl Component for Model {
 }
 
 fn main() {
-    // let mut sim = boids::Simulation::new();
-    //
-    // for i in 0..10 {
-    //     for j in 0..10 {
-    //         sim.add_new((i as f32) / 2. + 25., (j as f32) / 2. + 25.);
-    //     }
-    // }
-    //
-    // println!("{:?}", sim);
-    // sim.update();
-    // println!("{:?}", sim);
     wasm_logger::init(wasm_logger::Config::default());
     yew::start_app::<Model>();
 }
