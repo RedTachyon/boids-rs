@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+crate-type = ["rlib", "cdylib"]
+
 
 [dependencies]
 wasm-bindgen = "0.2.83"
@@ -11,6 +14,7 @@ yew = "0.19.3"
 gloo-timers = "0.2.4"
 log = "0.4.17"
 wasm-logger = "0.2.0"
+stdweb = "0.4.20"
 
 
 [dependencies.web-sys]
@@ -26,5 +30,10 @@ features = [
   "HtmlCanvasElement",
   "TextMetrics",
   "ImageData",
-  "ImageBitmap"
+  "ImageBitmap",
+  "HtmlFormElement",
+  "Event",
+  "EventTarget",
+  "Node",
+  "HtmlCollection"
 ]

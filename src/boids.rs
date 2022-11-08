@@ -12,6 +12,21 @@ const MIN_SPEED: f32 = 2.0;
 const SIZE: f32 = 100.0;
 
 #[derive(Debug, Clone)]
+pub struct Parameters {
+    pub turn_factor: f32,
+    pub visual_range: f32,
+    pub protected_range: f32,
+    pub centering_factor: f32,
+    pub avoid_factor: f32,
+    pub match_factor: f32,
+    pub max_speed: f32,
+    pub min_speed: f32,
+    pub size_x: f32,
+    pub size_y: f32,
+}
+
+
+#[derive(Debug, Clone)]
 pub struct Boid {
     id: usize,
     x: f32,
@@ -31,13 +46,27 @@ impl Boid {
 #[derive(Debug, Clone)]
 pub struct Simulation {
     boids: Vec<Boid>,
+    parameters: Parameters,
 }
 
 
 impl Simulation {
     pub fn new() -> Self {
+        let parameters = Parameters {
+            turn_factor: TURN_FACTOR,
+            visual_range: VISUAL_RANGE,
+            protected_range: PROTECTED_RANGE,
+            centering_factor: CENTERING_FACTOR,
+            avoid_factor: AVOID_FACTOR,
+            match_factor: MATCH_FACTOR,
+            max_speed: MAX_SPEED,
+            min_speed: MIN_SPEED,
+            size_x: SIZE,
+            size_y: SIZE,
+        };
         Self {
             boids: vec![],
+            parameters
         }
     }
 
@@ -93,13 +122,13 @@ impl Simulation {
                 let dx = boid.x - other_boid.x;
                 let dy = boid.y - other_boid.y;
 
-                if (dx.abs() < VISUAL_RANGE) && (dy.abs() < VISUAL_RANGE) {
+                if (dx.abs() < self.parameters.visual_range) && (dy.abs() < self.parameters.visual_range) {
                     let dist_square = dx * dx + dy * dy;
 
-                    if dist_square < PROTECTED_RANGE * PROTECTED_RANGE {
+                    if dist_square <  self.parameters.protected_range * self.parameters.protected_range {
                         close_dx += dx;
                         close_dy += dy;
-                    } else if dist_square < VISUAL_RANGE * VISUAL_RANGE {
+                    } else if dist_square < self.parameters.visual_range * self.parameters.visual_range {
                         xpos_avg += other_boid.x;
                         ypos_avg += other_boid.y;
 
@@ -119,37 +148,37 @@ impl Simulation {
                 xvel_avg /= neighboring_boids as f32;
                 yvel_avg /= neighboring_boids as f32;
 
-                boid.vx += (xpos_avg - boid.x) * CENTERING_FACTOR
-                         + (xvel_avg - boid.vx) * MATCH_FACTOR;
+                boid.vx += (xpos_avg - boid.x) * self.parameters.centering_factor
+                         + (xvel_avg - boid.vx) * self.parameters.match_factor;
 
-                boid.vy += (ypos_avg - boid.y) * CENTERING_FACTOR
-                         + (yvel_avg - boid.vy) * MATCH_FACTOR;
+                boid.vy += (ypos_avg - boid.y) * self.parameters.centering_factor
+                         + (yvel_avg - boid.vy) * self.parameters.match_factor;
 
             }
 
-            boid.vx += close_dx * AVOID_FACTOR;
-            boid.vy += close_dy * AVOID_FACTOR;
+            boid.vx += close_dx * self.parameters.avoid_factor;
+            boid.vy += close_dy * self.parameters.avoid_factor;
 
             if boid.x < 0.0 {
-                boid.vx += TURN_FACTOR;
-            } else if boid.x > SIZE {
-                boid.vx -= TURN_FACTOR;
+                boid.vx += self.parameters.turn_factor;
+            } else if boid.x > self.parameters.size_x {
+                boid.vx -= self.parameters.turn_factor;
             }
 
             if boid.y < 0.0 {
-                boid.vy += TURN_FACTOR;
-            } else if boid.y > SIZE {
-                boid.vy -= TURN_FACTOR;
+                boid.vy += self.parameters.turn_factor;
+            } else if boid.y > self.parameters.size_y {
+                boid.vy -= self.parameters.turn_factor;
             }
 
             let speed = (boid.vx * boid.vx + boid.vy * boid.vy).sqrt();
 
-            if speed > MAX_SPEED {
-                boid.vx *= MAX_SPEED / speed;
-                boid.vy *= MAX_SPEED / speed;
-            } else if speed < MIN_SPEED {
-                boid.vx *= MIN_SPEED / speed;
-                boid.vy *= MIN_SPEED / speed;
+            if speed > self.parameters.max_speed {
+                boid.vx *= self.parameters.max_speed / speed;
+                boid.vy *= self.parameters.max_speed / speed;
+            } else if speed < self.parameters.min_speed {
+                boid.vx *= self.parameters.min_speed / speed;
+                boid.vy *= self.parameters.min_speed / speed;
             }
 
             boid.x += boid.vx;
@@ -157,5 +186,10 @@ impl Simulation {
 
         }
 
+
+    }
+
+    pub fn update_params(&mut self, params: Parameters) {
+        self.parameters = params;
     }
 }
